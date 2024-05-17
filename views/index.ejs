@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com" defer></script>
+  <title>URL Shortener</title>
+</head>
+
+<body>
+  <div class="container-lg mx-auto my-20 w-full flex flex-col gap-4 items-center w-fit">
+    <h1 class="text-6xl text-center font-bold">URL Shortener</h1>
+
+    <form class="w-1/2 flex gap-2 justify-center mb-10" id="url-form">
+      <input class="p-2 border border-2 border-slate-400 focus:outline-sky-600 rounded-lg w-4/5" type="text" id="url"
+        placeholder="Insert your url here, example: https://www.example.com/" required>
+
+      <button class="p-2 bg-sky-500 text-white border border-2 rounded-lg" type="submit">Shorten</button>
+    </form>
+
+    <h2 class="text-2xl">Shortened URLs</h2>
+    <div class="rounded-lg">
+      <table id="shortened-urls" class="table-auto">
+        <thead>
+          <tr class="bg-sky-500 text-white">
+            <th class="px-6 py-2">Original URL</th>
+            <th class="px-6 py-2">Short URL</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr id="no-urls">
+            <td colspan="2">No shortened URLs yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    const urlForm = document.getElementById('url-form');
+    const shortenedUrlsTable = document.getElementById('shortened-urls');
+    const domain = 'http://localhost:3000/'
+
+    urlForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      let longUrl = document.getElementById('url');
+
+      fetch('/shorten', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ longUrl }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.shortUrl) {
+            addShortenedUrlToTable(longUrl.value, data.shortUrl);
+          }
+
+          longUrl.value = ''
+        });
+    });
+
+    function addShortenedUrlToTable(longUrl, shortUrl) {
+      const noUrlsMessage = document.getElementById('no-urls')
+      if (noUrlsMessage !== null) {
+        noUrlsMessage.remove()
+      }
+
+      const row = shortenedUrlsTable.insertRow();
+      row.classList.add('odd:bg-slate-100')
+      const originalUrlCell = row.insertCell();
+      const shortUrlCell = row.insertCell();
+      originalUrlCell.classList.add('py-2', 'px-6')
+      shortUrlCell.classList.add('py-2', 'px-6')
+
+      originalUrlCell.textContent = longUrl.slice(0, 50) + '...';
+      shortUrlCell.innerHTML = `<a class="text-sky-500" href="/${shortUrl}">${domain}${shortUrl}</a>`;
+    }
+  </script>
+</body>
+
+</html>
