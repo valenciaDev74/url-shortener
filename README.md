@@ -1,4 +1,4 @@
-[image of the aplication](https://cdn.discordapp.com/attachments/628943954397888522/1241084077973700668/cvnbmfghjmgjnm.PNG?ex=6648e91e&is=6647979e&hm=e65317c37738cb6a4e13783254a484720a0c20270555e34307f4c367c0b3e0f2&)
+![image of the aplication](https://cdn.discordapp.com/attachments/628943954397888522/1241084077973700668/cvnbmfghjmgjnm.PNG?ex=6648e91e&is=6647979e&hm=e65317c37738cb6a4e13783254a484720a0c20270555e34307f4c367c0b3e0f2&)
 
 ## URL Shortener in TypeScript
 
