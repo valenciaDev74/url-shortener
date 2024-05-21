@@ -33,4 +33,18 @@ export default class UrlModel implements IUrlModel {
       await client.close()
     }
   }
+
+  async exist (fields: object): Promise<boolean> {
+    const client = await runDB()
+    const db = client.db('url_shortener')
+    const collection = db.collection('urls')
+
+    const data = await collection.findOne(fields)
+    if (data) {
+      await client.close()
+      return true
+    }
+    await client.close()
+    return false
+  }
 }

@@ -13,8 +13,10 @@
     <h1 class="text-6xl text-center font-bold">URL Shortener</h1>
 
     <form class="w-1/2 flex gap-2 justify-center mb-10" id="url-form">
-      <input class="p-2 border border-2 border-slate-400 focus:outline-sky-600 rounded-lg w-4/5" type="text" id="url"
+      <input id="url" class="p-2 border border-2 border-slate-400 focus:outline-sky-600 rounded-lg w-4/5" type="text"
         placeholder="Insert your url here, example: https://www.example.com/" required>
+      <input id="personal-route" class="p-2 border border-2 border-slate-400 focus:outline-sky-600 rounded-lg
+        type=" text" placeholder="*Optional: name of route">
 
       <button class="p-2 bg-sky-500 text-white border border-2 rounded-lg" type="submit">Shorten</button>
     </form>
@@ -46,23 +48,37 @@
     urlForm.addEventListener('submit', (event) => {
       event.preventDefault();
 
-      let longUrl = document.getElementById('url');
+      let inputUrl = document.getElementById('url');
+      let longUrl = inputUrl.value
+      let inputPersonalRoute = document.getElementById('personal-route')
+      let personalRouteValue = inputPersonalRoute.value
+
+      if (!personalRouteValue) {
+        personalRouteValue = null
+      }
 
       fetch('/shorten', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ longUrl }),
+        body: JSON.stringify({ longUrl, personalRouteValue }),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            addErrorMessage('codigo de ruta ya existente')
+          }
+          return response.json()
+
+        })
         .then((data) => {
-          if (data.shortUrl) {
-            addShortenedUrlToTable(longUrl.value, data.shortUrl);
+          if (data?.shortUrl) {
+            addShortenedUrlToTable(longUrl, data.shortUrl);
           }
 
-          longUrl.value = ''
-        });
+          inputUrl.value = ''
+          inputPersonalRoute.value = ''
+        })
     });
 
     function addShortenedUrlToTable(longUrl, shortUrl) {
@@ -80,6 +96,36 @@
 
       originalUrlCell.textContent = longUrl.slice(0, 50) + '...';
       shortUrlCell.innerHTML = `<a class="text-sky-500" href="/${shortUrl}">${domain}${shortUrl}</a>`;
+    }
+
+    function addErrorMessage(message) {
+      let errorMessageBox = document.getElementById('error-message')
+      if (errorMessageBox === null) {
+        errorMessageBox = document.createElement('div')
+        errorMessageBox.setAttribute('id', 'error-message')
+      }
+
+      errorMessageBox.setAttribute('class', 'absolute p-4 bg-red-100 border-2 border-red-500 rounded-lg text-red-500 top-10 w-fit left-1/2 transform -translate-x-1/2')
+      // errorMessageBox.classList
+      //   .add(
+      //     'absolute',
+      //     'p-4',
+      //     'bg-red-100',
+      //     'border-2',
+      //     'border-red-500',
+      //     'rounded-lg',
+      //     'text-red-500',
+      //     'top-10',
+      //     'w-fit',
+      //     'left-1/2',
+      //     'transform',
+      //     '-translate-x-1/2')
+      errorMessageBox.innerHTML = message
+      document.body.appendChild(errorMessageBox)
+
+      setTimeout(() => {
+        errorMessageBox.remove()
+      }, 5000)
     }
   </script>
 </body>

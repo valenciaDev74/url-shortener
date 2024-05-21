@@ -12,7 +12,7 @@ const client = new MongoClient(uri, {
 export async function runDB (): Promise<MongoClient> {
   try {
     await client.connect()
-    console.log('You successfully connected to MongoDB!')
+    // console.log('You successfully connected to MongoDB!')
     return client
   } catch (error) {
     console.error('Error connecting to MongoDB:', error)

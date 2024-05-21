@@ -9,12 +9,24 @@ export default class UrlController {
   }
 
   shortenUrl = async (req: Request, res: Response): Promise<void> => {
-    const originalUrl: string = req.body.longUrl
-    const shortUrl = this.randomCode()
+    const { longUrl, personalRouteValue } = req.body
 
-    await this.urlModel.save(originalUrl, shortUrl)
+    let shortUrl: string
 
-    res.json({ originalUrl, shortUrl })
+    if (!personalRouteValue) {
+      shortUrl = this.randomCode()
+    } else {
+      shortUrl = personalRouteValue
+    }
+
+    // si el enlace ya existe
+    const exist = await this.urlModel.exist({ shortUrl })
+    if (exist) {
+      res.status(409).json({ message: 'Short URL already exists.' })
+    } else {
+      await this.urlModel.save(longUrl, shortUrl)
+      res.json({ longUrl, shortUrl })
+    }
   }
 
   redirectUrl = async (req: Request, res: Response): Promise<void> => {
