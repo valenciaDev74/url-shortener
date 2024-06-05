@@ -14,7 +14,7 @@
 
     <form class="w-1/2 flex gap-2 justify-center mb-10" id="url-form">
       <input id="url" class="p-2 border border-2 border-slate-400 focus:outline-sky-600 rounded-lg w-4/5" type="text"
-        placeholder="Insert your url here, example: https://www.example.com/" required>
+        placeholder="Insert your url here" required>
       <input id="personal-route" class="p-2 border border-2 border-slate-400 focus:outline-sky-600 rounded-lg
         type=" text" placeholder="*Optional: name of route">
 
@@ -55,6 +55,11 @@
 
       if (!personalRouteValue) {
         personalRouteValue = null
+      }
+
+      if (!validateUrl(longUrl)) {
+        addErrorMessage('Url no valida')
+        return
       }
 
       fetch('/shorten', {
@@ -99,6 +104,8 @@
     }
 
     function addErrorMessage(message) {
+
+
       let errorMessageBox = document.getElementById('error-message')
       if (errorMessageBox === null) {
         errorMessageBox = document.createElement('div')
@@ -106,26 +113,21 @@
       }
 
       errorMessageBox.setAttribute('class', 'absolute p-4 bg-red-100 border-2 border-red-500 rounded-lg text-red-500 top-10 w-fit left-1/2 transform -translate-x-1/2')
-      // errorMessageBox.classList
-      //   .add(
-      //     'absolute',
-      //     'p-4',
-      //     'bg-red-100',
-      //     'border-2',
-      //     'border-red-500',
-      //     'rounded-lg',
-      //     'text-red-500',
-      //     'top-10',
-      //     'w-fit',
-      //     'left-1/2',
-      //     'transform',
-      //     '-translate-x-1/2')
       errorMessageBox.innerHTML = message
       document.body.appendChild(errorMessageBox)
 
       setTimeout(() => {
         errorMessageBox.remove()
       }, 5000)
+    }
+
+    function validateUrl(url) {
+      try {
+        new URL(url)
+        return true
+      } catch {
+        return false
+      }
     }
   </script>
 </body>
